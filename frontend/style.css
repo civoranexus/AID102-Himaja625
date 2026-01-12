@@ -42,3 +42,46 @@ footer {
     background-color: #0b3c5d;
     color: white;
 }
+
+.primary-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: #1B9AAA; /* Civora Primary Teal */
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.primary-btn:hover {
+    background-color: #16808D;
+}
+
+form {
+    max-width: 400px;
+    margin: auto;
+}
+
+label {
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #142C52; /* Navy Core */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
