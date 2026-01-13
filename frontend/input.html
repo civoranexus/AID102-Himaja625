@@ -7,33 +7,54 @@
 </head>
 <body>
 
-    <header class="navbar">
-        <h1>SoilSense</h1>
-    </header>
+<header class="navbar">
+    <img src="assets/favicon-96x96.png" alt="Civora Nexus Logo" class="logo">
+    <h1>SoilSense</h1>
+</header>
 
-    <section class="content">
-        <h2>Soil Parameter Input</h2>
-        <p>Please enter the soil values to analyse soil health.</p>
+<section class="form-container">
+    <h2>Soil Health Analysis</h2>
+    <p class="form-subtitle">
+        Enter soil parameters to analyze overall soil health.
+    </p>
 
-        <form>
-            <label>Nitrogen (N)</label>
-            <input type="number" placeholder="Enter nitrogen value">
+    <form id="soilForm">
+        <div class="form-group">
+            <label for="nitrogen">Nitrogen (mg/kg)</label>
+            <input type="number" id="nitrogen" required>
+        </div>
 
-            <label>Phosphorus (P)</label>
-            <input type="number" placeholder="Enter phosphorus value">
+        <div class="form-group">
+            <label for="phosphorus">Phosphorus (mg/kg)</label>
+            <input type="number" id="phosphorus" required>
+        </div>
 
-            <label>Potassium (K)</label>
-            <input type="number" placeholder="Enter potassium value">
+        <div class="form-group">
+            <label for="potassium">Potassium (mg/kg)</label>
+            <input type="number" id="potassium" required>
+        </div>
 
-            <label>Soil pH</label>
-            <input type="number" step="0.1" placeholder="e.g., 6.5">
+        <div class="form-group">
+            <label for="ph">Soil pH (0-14)</label>
+            <input type="number" step="0.1" id="ph" min="0" max="14" required>
+        </div>
 
-            <label>Moisture Level</label>
-            <input type="number" placeholder="Enter moisture level">
+        <div class="form-group">
+            <label for="moisture">Moisture Level (%)</label>
+            <input type="number" id="moisture" min="0" max="100" required>
+        </div>
 
-            <button type="submit">Analyse Soil</button>
-        </form>
-    </section>
+        <button type="submit" class="primary-btn">
+            Analyze Soil
+        </button>
+    </form>
+</section>
+
+<footer>
+    <p>Developed as part of CivoraX Internship Programme</p>
+</footer>
+
+<script src="script.js"></script>
 
 </body>
 </html>
