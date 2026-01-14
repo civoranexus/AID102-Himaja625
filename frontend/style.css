@@ -1,3 +1,4 @@
+/* Global Styles */
 body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
@@ -5,49 +6,84 @@ body {
     color: #1f2933;
 }
 
+/* Navbar */
 .navbar {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding: 15px 30px;
-    background-color: #0b3c5d;
-    color: white;
+    padding: 16px 40px;
+    background-color: #123a63;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .logo {
-    height: 40px;
-    margin-right: 15px;
+    height: 38px;
 }
 
+.brand-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.nav-link {
+    color: #e6f4f7;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #1B9AAA;
+}
+
+.login-btn {
+    padding: 8px 16px;
+    background-color: #1B9AAA;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+}
+
+.login-btn:hover {
+    background-color: #16808D;
+}
+
+/* Hero Section */
 .hero {
-    padding: 60px 30px;
+    padding: 70px 30px;
     background-color: #e6f4f7;
     text-align: center;
 }
 
 .hero h2 {
-    color: #0b3c5d;
+    color: #123a63;
+    font-size: 28px;
 }
 
-.content {
-    padding: 40px 30px;
+.hero p {
+    max-width: 700px;
+    margin: 15px auto;
+    line-height: 1.6;
 }
 
-.content h3 {
-    color: #0b3c5d;
-}
-
-footer {
-    text-align: center;
-    padding: 15px;
-    background-color: #0b3c5d;
-    color: white;
-}
-
+/* Buttons */
 .primary-btn {
     display: inline-block;
-    margin-top: 20px;
-    padding: 12px 24px;
-    background-color: #1B9AAA; 
+    margin-top: 25px;
+    padding: 12px 26px;
+    background-color: #1B9AAA;
     color: white;
     text-decoration: none;
     border-radius: 6px;
@@ -58,40 +94,36 @@ footer {
     background-color: #16808D;
 }
 
-form {
-    max-width: 400px;
-    margin: auto;
-}
-
-label {
-    font-weight: bold;
-}
-
-input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #142C52; 
+.secondary-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #142C52;
     color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
+    text-decoration: none;
+    border-radius: 6px;
 }
 
+/* Content Section */
+.content {
+    padding: 50px 40px;
+}
+
+.content h3 {
+    color: #123a63;
+}
+
+.content ul {
+    padding-left: 20px;
+}
+
+/* Forms */
 .form-container {
-    max-width: 500px;
-    margin: 40px auto;
-    padding: 30px;
+    max-width: 520px;
+    margin: 50px auto;
+    padding: 35px;
     background: #f4f8fb;
-    border-radius: 10px;
+    border-radius: 12px;
 }
 
 .form-container h2 {
@@ -101,12 +133,12 @@ button {
 
 .form-subtitle {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     color: #555;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
 }
 
 .form-group label {
@@ -120,4 +152,38 @@ button {
     padding: 10px;
     border-radius: 6px;
     border: 1px solid #ccc;
+}
+
+/* Result Page */
+.result-container {
+    max-width: 720px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.result-card {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.result-card h3 {
+    color: #1B9AAA;
+    margin-bottom: 10px;
+}
+
+.advice-box {
+    margin-top: 20px;
+    background: #f4f8fb;
+    padding: 18px;
+    border-radius: 8px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 18px;
+    background-color: #123a63;
+    color: white;
 }
