@@ -9,18 +9,19 @@
 
 <header class="navbar">
     <div class="nav-left">
-        <img src="assets/favicon-96x96.png" alt="CivoraX Logo" class="logo">
+        <img src="assets/favicon-96x96.png" class="logo">
         <span class="brand-name">SoilSense</span>
     </div>
 
     <nav class="nav-center">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="input.html" class="nav-link">Analyze</a>
-        <a href="about.html" class="nav-link active">About</a>
+        <a href="index.html" class="nav-link auth-only">Home</a>
+        <a href="input.html" class="nav-link auth-only">Analyze</a>
+        <a href="about.html" class="nav-link auth-only active">About</a>
+        <a href="dashboard.html" class="nav-link auth-only">Dashboard</a>
     </nav>
 
     <div class="nav-right">
-        <a href="login.html" class="nav-btn">Login</a>
+        <button id="logoutBtn" class="nav-btn">Logout</button>
     </div>
 </header>
 
@@ -55,5 +56,6 @@
     <p>Developed as part of CivoraX Internship Programme</p>
 </footer>
 
+<script src="script.js"></script>
 </body>
 </html>

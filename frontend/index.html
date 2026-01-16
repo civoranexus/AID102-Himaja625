@@ -2,60 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SoilSense | Intelligent Soil Health Analyzer</title>
+    <title>SoilSense | Home</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="nav-left">
-            <img src="assets/favicon-96x96.png" alt="CivoraX Logo" class="logo">
-            <span class="brand-name">SoilSense</span>
-        </div>
+<header class="navbar">
+    <div class="nav-left">
+        <img src="assets/favicon-96x96.png" class="logo">
+        <span class="brand-name">SoilSense</span>
+    </div>
 
-        <nav class="nav-center">
-            <a href="index.html" class="nav-link active">Home</a>
-            <a href="input.html" class="nav-link">Analyze</a>
-            <a href="about.html" class="nav-link">About</a>
-        </nav>
+    <nav class="nav-center">
+        <a href="index.html" class="nav-link auth-only active">Home</a>
+        <a href="input.html" class="nav-link auth-only">Analyze</a>
+        <a href="about.html" class="nav-link auth-only">About</a>
+        <a href="dashboard.html" class="nav-link auth-only">Dashboard</a>
+    </nav>
 
-        <div class="nav-right">
-            <a href="login.html" class="nav-btn">Login</a>
-        </div>
-    </header>
+    <div class="nav-right">
+        <button id="logoutBtn" class="nav-btn">Logout</button>
+    </div>
+</header>
 
-    <section class="hero">
-        <h2>Intelligent Soil Health Analysis</h2>
-        <p>
-            SoilSense is an AI-powered system designed to analyze soil health
-            using key soil parameters and provide meaningful insights for
-            better agricultural decision-making.
-        </p>
+<section class="hero">
+    <h2>Intelligent Soil Health Analysis</h2>
+    <p>AI-powered soil health insights for better agriculture.</p>
+    <a href="input.html" class="primary-btn">Analyze Soil</a>
+</section>
 
-        <a href="input.html" class="primary-btn">Analyze Soil</a>
-    </section>
+<footer>
+    <p>Developed as part of CivoraX Internship Programme</p>
+</footer>
 
-    <section class="content">
-        <h3>Why Soil Health Matters?</h3>
-        <p>
-            Healthy soil is the foundation of sustainable agriculture.
-            By understanding soil conditions, farmers and researchers
-            can improve crop yield, reduce waste, and make informed decisions.
-        </p>
-
-        <h3>Key Parameters Analyzed:</h3>
-        <ul>
-            <li>Nitrogen (N)</li>
-            <li>Phosphorus (P)</li>
-            <li>Potassium (K)</li>
-            <li>Soil pH</li>
-            <li>Moisture Level</li>
-        </ul>
-    </section>
-
-    <footer>
-        <p>Developed as part of CivoraX Internship Programme</p>
-    </footer>
-
+<script src="script.js"></script>
 </body>
 </html>
