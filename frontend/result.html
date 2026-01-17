@@ -9,35 +9,52 @@
 
 <header class="navbar">
     <div class="nav-left">
-        <img src="assets/favicon-96x96.png" alt="CivoraX Logo" class="logo">
+        <img src="assets/favicon-96x96.png" alt="SoilSense Logo" class="logo">
         <span class="brand-name">SoilSense</span>
     </div>
 
     <nav class="nav-center">
-        <a href="index.html" class="nav-link active">Home</a>
+        <a href="index.html" class="nav-link">Home</a>
         <a href="input.html" class="nav-link">Analyze</a>
         <a href="about.html" class="nav-link">About</a>
     </nav>
 
     <div class="nav-right">
-        <a href="login.html" id="loginBtn" class="nav-btn">Login</a>
-        <button onclick="logout()" id="logoutBtn" class="nav-btn">Logout</button>
+        <button onclick="logout()" class="nav-btn">Logout</button>
     </div>
 </header>
 
-<section class="result-container">
-    <h2>Soil Health Analysis Result</h2>
+<section class="result-page">
+    <div class="result-card premium">
 
-    <div class="result-card">
-        <h3 id="healthStatus">—</h3>
-        <p id="healthReason"></p>
-
-        <div class="advice-box">
-            <h4>Advisory Suggestions</h4>
-            <ul id="adviceList"></ul>
+        <!-- Status Badge -->
+        <div class="status-badge healthy" id="healthBadge">
+            Healthy Soil
         </div>
 
-        <a href="input.html" class="secondary-btn">Analyze Another Sample</a>
+        <!-- Result Title -->
+        <h2 class="result-title">Soil Health Status</h2>
+
+        <!-- Explanation -->
+        <p class="result-description" id="healthReason">
+            Most soil parameters fall within optimal ranges, indicating good fertility and balance.
+        </p>
+
+        <!-- Advisory Section -->
+        <div class="advice-section">
+            <h3>Recommended Actions</h3>
+            <ul id="adviceList">
+                <li>Maintain current fertilization practices</li>
+                <li>Monitor moisture levels regularly</li>
+                <li>Conduct periodic soil testing</li>
+            </ul>
+        </div>
+
+        <!-- CTA -->
+        <a href="input.html" class="primary-btn full-width">
+            Analyze Another Sample
+        </a>
+
     </div>
 </section>
 
@@ -46,6 +63,5 @@
 </footer>
 
 <script src="script.js"></script>
-
 </body>
 </html>
