@@ -1,22 +1,33 @@
+import { NavLink } from "react-router-dom";
+
 export default function Header() {
+  const linkClass = ({ isActive }: { isActive: boolean }) =>
+    isActive
+      ? "text-teal-600 font-semibold"
+      : "text-gray-600 hover:text-teal-500 transition";
+
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        
-        <div className="text-xl font-semibold text-slate-800">
-          CivoraX · <span className="text-teal-600">SoilSense</span>
+    <header className="bg-white border-b">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        {/* Logo */}
+        <div className="text-xl font-bold text-gray-900">
+          CivoraX<span className="text-teal-600"> · SoilSense</span>
         </div>
 
-        <nav className="hidden md:flex gap-8 text-slate-600 font-medium">
-          <a className="hover:text-teal-600 transition" href="#">Features</a>
-          <a className="hover:text-teal-600 transition" href="#">Analyze</a>
-          <a className="hover:text-teal-600 transition" href="#">About</a>
+        {/* Nav */}
+        <nav className="flex gap-6">
+          <NavLink to="/" className={linkClass}>Home</NavLink>
+          <NavLink to="/features" className={linkClass}>Features</NavLink>
+          <NavLink to="/analyze" className={linkClass}>Analyze</NavLink>
+          <NavLink to="/about" className={linkClass}>About</NavLink>
         </nav>
 
-        <button className="bg-teal-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+        <NavLink
+          to="/analyze"
+          className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition"
+        >
           Get Started
-        </button>
-
+        </NavLink>
       </div>
     </header>
   );
