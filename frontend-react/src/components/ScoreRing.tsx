@@ -7,12 +7,12 @@ export default function ScoreRing({ value }: Props) {
   const circumference = 2 * Math.PI * radius;
   const progress = (value / 100) * circumference;
 
-  let stroke = "#f59e0b"; // yellow
-  if (value >= 75) stroke = "#10b981"; // green
-  if (value < 50) stroke = "#ef4444"; // red
+  let stroke = "#f59e0b"; 
+  if (value >= 70) stroke = "#10b981"; 
+  if (value < 40) stroke = "#ef4444"; 
 
   return (
-    <svg width="100" height="100">
+    <svg width="100" height="100" className="shrink-0">
       <circle
         cx="50"
         cy="50"
