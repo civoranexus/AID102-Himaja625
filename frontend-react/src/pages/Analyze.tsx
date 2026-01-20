@@ -1,10 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+type FormState = {
+  nitrogen: string;
+  phosphorus: string;
+  potassium: string;
+  ph: string;
+  moisture: string;
+};
+
 export default function Analyze() {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     nitrogen: "",
     phosphorus: "",
     potassium: "",
@@ -17,19 +25,28 @@ export default function Analyze() {
     Number(form.ph) >= 0 &&
     Number(form.ph) <= 14;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!isValid) return;
 
-    navigate("/results", {
-      state: {
-        nitrogen: Number(form.nitrogen),
-        phosphorus: Number(form.phosphorus),
-        potassium: Number(form.potassium),
-        ph: Number(form.ph),
-        moisture: Number(form.moisture),
-      },
-    });
+    try {
+      const response = await fetch("http://localhost:5000/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nitrogen: Number(form.nitrogen),
+          phosphorus: Number(form.phosphorus),
+          potassium: Number(form.potassium),
+          ph: Number(form.ph),
+          moisture: Number(form.moisture),
+        }),
+      });
+
+      const result = await response.json();
+      navigate("/results", { state: result });
+    } catch (error) {
+      alert("Failed to analyze soil. Please try again.");
+    }
   }
 
   return (
@@ -57,7 +74,7 @@ export default function Analyze() {
               type="number"
               min={min}
               max={max}
-              value={form[key as keyof typeof form]}
+              value={form[key as keyof FormState]}
               onChange={(e) =>
                 setForm({ ...form, [key]: e.target.value })
               }
