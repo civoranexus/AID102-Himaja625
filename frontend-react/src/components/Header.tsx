@@ -20,6 +20,7 @@ export default function Header() {
           <NavLink to="/features" className={linkClass}>Features</NavLink>
           <NavLink to="/analyze" className={linkClass}>Analyze</NavLink>
           <NavLink to="/about" className={linkClass}>About</NavLink>
+          <NavLink to="/history" className={linkClass}>History</NavLink>
         </nav>
 
         <NavLink

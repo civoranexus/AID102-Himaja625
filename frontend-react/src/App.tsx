@@ -7,6 +7,7 @@ import Features from "./pages/Features";
 import Analyze from "./pages/Analyze";
 import Results from "./pages/Results";
 import About from "./pages/About";
+import History from "./pages/History";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/analyze" element={<Analyze />} />
           <Route path="/results" element={<Results />} />
           <Route path="/about" element={<About />} />
+          <Route path="/history" element={<History />} />
         </Routes>
       </main>
 
