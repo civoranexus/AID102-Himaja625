@@ -14,18 +14,19 @@ export default function Header() {
           CivoraX<span className="text-teal-600"> · SoilSense</span>
         </div>
 
-        {/* Nav */}
-        <nav className="flex gap-6">
+        {/* Navigation */}
+        <nav className="flex gap-6 items-center">
           <NavLink to="/" className={linkClass}>Home</NavLink>
           <NavLink to="/features" className={linkClass}>Features</NavLink>
           <NavLink to="/analyze" className={linkClass}>Analyze</NavLink>
-          <NavLink to="/about" className={linkClass}>About</NavLink>
           <NavLink to="/history" className={linkClass}>History</NavLink>
+          <NavLink to="/about" className={linkClass}>About</NavLink>
         </nav>
 
+        {/* CTA */}
         <NavLink
-          to="/analyze"
-          className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition"
+          to="/auth"
+          className="bg-teal-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-teal-700 transition"
         >
           Get Started
         </NavLink>

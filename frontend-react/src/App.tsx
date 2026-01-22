@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
@@ -8,6 +8,7 @@ import Analyze from "./pages/Analyze";
 import Results from "./pages/Results";
 import About from "./pages/About";
 import History from "./pages/History";
+import Auth from "./pages/Auth";
 
 function App() {
   return (
@@ -16,12 +17,17 @@ function App() {
 
       <main className="flex-grow">
         <Routes>
-          <Route path="/" element={<Home />} />
+          {/* Auth first */}
+          <Route path="/" element={<Navigate to="/auth" />} />
+          <Route path="/auth" element={<Auth />} />
+
+          {/* App pages */}
+          <Route path="/home" element={<Home />} />
           <Route path="/features" element={<Features />} />
           <Route path="/analyze" element={<Analyze />} />
           <Route path="/results" element={<Results />} />
-          <Route path="/about" element={<About />} />
           <Route path="/history" element={<History />} />
+          <Route path="/about" element={<About />} />
         </Routes>
       </main>
 

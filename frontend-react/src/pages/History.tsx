@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import HistoryChart from "../components/HistoryChart";
 
 type HistoryItem = {
   id: number;
@@ -14,7 +15,7 @@ export default function History() {
   useEffect(() => {
     fetch("http://localhost:5000/api/history")
       .then((res) => res.json())
-      .then((result) => {
+      .then((result: HistoryItem[]) => {
         setData(result);
         setLoading(false);
       })
@@ -29,7 +30,7 @@ export default function History() {
     );
   }
 
-  // Trend insight (average score)
+  // Average score calculation
   const avgScore =
     data.length > 0
       ? data.reduce((sum, item) => sum + item.score, 0) / data.length
@@ -37,14 +38,18 @@ export default function History() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
-      <h2 className="text-2xl font-bold mb-2">Analysis History</h2>
+      <h2 className="text-2xl font-bold mb-2">
+        Analysis History
+      </h2>
 
-      {/* Subtitle / context */}
-      <p className="text-slate-600 mb-4">
+      <p className="text-slate-600 mb-6">
         Track how your soil health changes over time
       </p>
 
-      {/* Trend summary */}
+      {/* Chart */}
+      {data.length > 1 && <HistoryChart data={data} />}
+
+      {/* Average insight */}
       {data.length > 0 && (
         <div className="mb-6 text-slate-700">
           Average Soil Health Score:{" "}
