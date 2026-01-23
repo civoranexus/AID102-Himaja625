@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Home from "./pages/Home";
 import Features from "./pages/Features";
@@ -17,17 +18,64 @@ function App() {
 
       <main className="flex-grow">
         <Routes>
-          {/* Auth first */}
+          {/* Auth */}
           <Route path="/" element={<Navigate to="/auth" />} />
           <Route path="/auth" element={<Auth />} />
 
-          {/* App pages */}
-          <Route path="/home" element={<Home />} />
-          <Route path="/features" element={<Features />} />
-          <Route path="/analyze" element={<Analyze />} />
-          <Route path="/results" element={<Results />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/about" element={<About />} />
+          {/* Protected App */}
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/features"
+            element={
+              <ProtectedRoute>
+                <Features />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/analyze"
+            element={
+              <ProtectedRoute>
+                <Analyze />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/results"
+            element={
+              <ProtectedRoute>
+                <Results />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <History />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/about"
+            element={
+              <ProtectedRoute>
+                <About />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </main>
 

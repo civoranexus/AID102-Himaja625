@@ -1,7 +1,14 @@
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 export default function Auth() {
   const [tab, setTab] = useState<"login" | "register">("login");
+  const { login } = useAuth();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    login(); // fake login to redirect
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#E0F7FA] px-4">
@@ -41,7 +48,7 @@ export default function Auth() {
         </div>
 
         {/* Form */}
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           {tab === "register" && (
             <div>
               <label className="block text-sm font-medium mb-1">

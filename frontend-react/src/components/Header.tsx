@@ -1,6 +1,9 @@
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
+  const { isAuthenticated, logout } = useAuth();
+
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     isActive
       ? "text-teal-600 font-semibold"
@@ -16,20 +19,29 @@ export default function Header() {
 
         {/* Navigation */}
         <nav className="flex gap-6 items-center">
-          <NavLink to="/" className={linkClass}>Home</NavLink>
+          <NavLink to="/home" className={linkClass}>Home</NavLink>
           <NavLink to="/features" className={linkClass}>Features</NavLink>
           <NavLink to="/analyze" className={linkClass}>Analyze</NavLink>
           <NavLink to="/history" className={linkClass}>History</NavLink>
           <NavLink to="/about" className={linkClass}>About</NavLink>
         </nav>
 
-        {/* CTA */}
-        <NavLink
-          to="/auth"
-          className="bg-teal-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-teal-700 transition"
-        >
-          Get Started
-        </NavLink>
+        {/* Auth CTA */}
+        {isAuthenticated ? (
+          <button
+            onClick={logout}
+            className="bg-red-500 text-white px-5 py-2 rounded-lg font-medium hover:bg-red-600 transition"
+          >
+            Logout
+          </button>
+        ) : (
+          <NavLink
+            to="/auth"
+            className="bg-teal-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-teal-700 transition"
+          >
+            Get Started
+          </NavLink>
+        )}
       </div>
     </header>
   );
