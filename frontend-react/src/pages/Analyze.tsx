@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiRequest } from "../utils/api";
 
 type FormState = {
   nitrogen: string;
@@ -30,22 +31,23 @@ export default function Analyze() {
     if (!isValid) return;
 
     try {
-      const response = await fetch("http://localhost:5000/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nitrogen: Number(form.nitrogen),
-          phosphorus: Number(form.phosphorus),
-          potassium: Number(form.potassium),
-          ph: Number(form.ph),
-          moisture: Number(form.moisture),
-        }),
-      });
+      const result = await apiRequest(
+        "http://localhost:5000/api/analyze",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            nitrogen: Number(form.nitrogen),
+            phosphorus: Number(form.phosphorus),
+            potassium: Number(form.potassium),
+            ph: Number(form.ph),
+            moisture: Number(form.moisture),
+          }),
+        }
+      );
 
-      const result = await response.json();
       navigate("/results", { state: result });
-    } catch (error) {
-      alert("Failed to analyze soil. Please try again.");
+    } catch {
+      alert("Failed to analyze soil.");
     }
   }
 
@@ -82,12 +84,6 @@ export default function Analyze() {
             />
           </div>
         ))}
-
-        {!isValid && (
-          <p className="text-sm text-red-500">
-            Please enter valid values before submitting.
-          </p>
-        )}
 
         <button
           disabled={!isValid}

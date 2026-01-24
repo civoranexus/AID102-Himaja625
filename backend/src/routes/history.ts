@@ -1,36 +1,37 @@
 import { Router } from "express";
 import { dbPromise } from "../database/db";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 const router = Router();
 
 /**
  * GET /api/history
- * Returns last soil analyses (latest first)
+ * Returns soil analysis history for logged-in user
  */
-router.get("/", async (_req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
+    const userId = (req as any).user.id;
     const db = await dbPromise;
 
-    const rows = await db.all(`
+    const rows = await db.all(
+      `
       SELECT
-        id,
-        nitrogen,
-        phosphorus,
-        potassium,
-        ph,
-        moisture,
         score,
         overall_status,
         created_at
       FROM soil_analysis
+      WHERE user_id = ?
       ORDER BY created_at DESC
-      LIMIT 20
-    `);
+      `,
+      [userId]
+    );
 
     res.json(rows);
   } catch (error) {
-    console.error("Failed to fetch history:", error);
-    res.status(500).json({ error: "Failed to fetch history" });
+    console.error("History fetch error:", error);
+    res.status(500).json({
+      error: "Failed to fetch history",
+    });
   }
 });
 

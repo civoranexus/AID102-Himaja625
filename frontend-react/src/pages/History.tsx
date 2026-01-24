@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import HistoryChart from "../components/HistoryChart";
+import { apiRequest } from "../utils/api";
 
 type HistoryItem = {
-  id: number;
   score: number;
   overall_status: "poor" | "moderate" | "healthy";
   created_at: string;
@@ -13,13 +13,9 @@ export default function History() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/history")
-      .then((res) => res.json())
-      .then((result: HistoryItem[]) => {
-        setData(result);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    apiRequest("http://localhost:5000/api/history")
+      .then(setData)
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) {
@@ -30,10 +26,10 @@ export default function History() {
     );
   }
 
-  // Average score calculation
   const avgScore =
     data.length > 0
-      ? data.reduce((sum, item) => sum + item.score, 0) / data.length
+      ? data.reduce((sum, item) => sum + item.score, 0) /
+        data.length
       : 0;
 
   return (
@@ -46,10 +42,8 @@ export default function History() {
         Track how your soil health changes over time
       </p>
 
-      {/* Chart */}
       {data.length > 1 && <HistoryChart data={data} />}
 
-      {/* Average insight */}
       {data.length > 0 && (
         <div className="mb-6 text-slate-700">
           Average Soil Health Score:{" "}
@@ -59,11 +53,10 @@ export default function History() {
         </div>
       )}
 
-      {/* History list */}
       <div className="space-y-4">
-        {data.map((item) => (
+        {data.map((item, i) => (
           <div
-            key={item.id}
+            key={i}
             className="bg-white p-4 rounded-lg shadow flex justify-between items-center"
           >
             <div>

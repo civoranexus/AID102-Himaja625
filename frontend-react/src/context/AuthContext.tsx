@@ -2,40 +2,58 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
+type User = {
+  id: number;
+  name: string;
+  email: string;
+};
+
 type AuthContextType = {
+  user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
-  login: () => void;
+  login: (user: User, token: string) => void;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
-  // Restore auth on refresh
-  useEffect(() => {
-    const saved = localStorage.getItem("civorax-auth");
-    if (saved === "true") {
-      setIsAuthenticated(true);
-    }
-  }, []);
+  const [user, setUser] = useState<User | null>(() => {
+    const stored = localStorage.getItem("civorax-user");
+    return stored ? JSON.parse(stored) : null;
+  });
 
-  const login = () => {
-    localStorage.setItem("civorax-auth", "true");
-    setIsAuthenticated(true);
-    navigate("/home");
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem("civorax-token");
+  });
+
+  const isAuthenticated = !!token;
+
+  // Persist login
+  const login = (user: User, token: string) => {
+    setUser(user);
+    setToken(token);
+    localStorage.setItem("civorax-user", JSON.stringify(user));
+    localStorage.setItem("civorax-token", token);
+    navigate("/analyze");
   };
 
+  // Logout
   const logout = () => {
-    localStorage.removeItem("civorax-auth");
-    setIsAuthenticated(false);
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("civorax-user");
+    localStorage.removeItem("civorax-token");
     navigate("/auth");
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, token, isAuthenticated, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

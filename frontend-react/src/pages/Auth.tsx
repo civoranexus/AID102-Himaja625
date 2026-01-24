@@ -4,10 +4,46 @@ import { useAuth } from "../context/AuthContext";
 export default function Auth() {
   const [tab, setTab] = useState<"login" | "register">("login");
   const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    login(); // fake login to redirect
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const payload = Object.fromEntries(formData.entries());
+
+    const endpoint =
+      tab === "login"
+        ? "http://localhost:5000/api/auth/login"
+        : "http://localhost:5000/api/auth/register";
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Authentication failed");
+        setLoading(false);
+        return;
+      }
+
+      if (tab === "login") {
+        login(data.user, data.token);
+      } else {
+        alert("Registration successful. Please login.");
+        setTab("login");
+      }
+    } catch {
+      alert("Server error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -26,6 +62,7 @@ export default function Auth() {
         {/* Tabs */}
         <div className="flex mb-6 bg-slate-100 rounded-lg overflow-hidden">
           <button
+            type="button"
             onClick={() => setTab("login")}
             className={`w-1/2 py-2 text-sm font-medium transition ${
               tab === "login"
@@ -36,6 +73,7 @@ export default function Auth() {
             Login
           </button>
           <button
+            type="button"
             onClick={() => setTab("register")}
             className={`w-1/2 py-2 text-sm font-medium transition ${
               tab === "register"
@@ -55,21 +93,23 @@ export default function Auth() {
                 Full Name
               </label>
               <input
+                name="name"
+                required
                 type="text"
                 placeholder="John Doe"
-                className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1B9AAA]"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#1B9AAA]"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Email
-            </label>
+            <label className="block text-sm font-medium mb-1">Email</label>
             <input
+              name="email"
+              required
               type="email"
               placeholder="you@civorax.com"
-              className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1B9AAA]"
+              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#1B9AAA]"
             />
           </div>
 
@@ -78,21 +118,27 @@ export default function Auth() {
               Password
             </label>
             <input
+              name="password"
+              required
               type="password"
               placeholder="••••••••"
-              className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1B9AAA]"
+              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#1B9AAA]"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full mt-2 py-3 rounded-lg font-medium text-white bg-[#1B9AAA] hover:bg-[#147783] transition"
+            disabled={loading}
+            className="w-full mt-2 py-3 rounded-lg font-medium text-white bg-[#1B9AAA] hover:bg-[#147783] transition disabled:opacity-60"
           >
-            {tab === "login" ? "Sign In" : "Create Account"}
+            {loading
+              ? "Please wait..."
+              : tab === "login"
+              ? "Sign In"
+              : "Create Account"}
           </button>
         </form>
 
-        {/* Footer */}
         <p className="text-xs text-center text-slate-500 mt-6">
           By continuing, you agree to CivoraX terms & privacy policy.
         </p>
