@@ -1,16 +1,19 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+} from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
 type User = {
   id: number;
-  name: string;
   email: string;
+  name?: string;
 };
 
 type AuthContextType = {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
   login: (user: User, token: string) => void;
   logout: () => void;
@@ -26,33 +29,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem("civorax-token");
-  });
+  const isAuthenticated = !!user;
 
-  const isAuthenticated = !!token;
-
-  // Persist login
   const login = (user: User, token: string) => {
-    setUser(user);
-    setToken(token);
-    localStorage.setItem("civorax-user", JSON.stringify(user));
     localStorage.setItem("civorax-token", token);
+    localStorage.setItem("civorax-user", JSON.stringify(user));
+    setUser(user);
     navigate("/analyze");
   };
 
-  // Logout
   const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem("civorax-user");
     localStorage.removeItem("civorax-token");
+    localStorage.removeItem("civorax-user");
+    setUser(null);
     navigate("/auth");
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isAuthenticated, login, logout }}
+      value={{
+        user,
+        isAuthenticated,
+        login,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

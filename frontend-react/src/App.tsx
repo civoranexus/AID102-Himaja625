@@ -9,6 +9,7 @@ import Analyze from "./pages/Analyze";
 import Results from "./pages/Results";
 import About from "./pages/About";
 import History from "./pages/History";
+import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 
 function App() {
@@ -73,6 +74,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <About />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />

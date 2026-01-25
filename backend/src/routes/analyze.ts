@@ -22,10 +22,8 @@ const router = Router();
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { nitrogen, phosphorus, potassium, ph, moisture } = req.body;
+    const userId = req.user!.id;
 
-    const userId = (req as any).user.id;
-
-    // Validate input
     if (
       [nitrogen, phosphorus, potassium, ph, moisture].some(
         (v) => typeof v !== "number"
@@ -36,7 +34,6 @@ router.post("/", authMiddleware, async (req, res) => {
       });
     }
 
-    // Rule-based evaluation
     const statuses = {
       nitrogen: evaluateNitrogen(nitrogen),
       phosphorus: evaluatePhosphorus(phosphorus),
@@ -45,13 +42,10 @@ router.post("/", authMiddleware, async (req, res) => {
       moisture: evaluateMoisture(moisture),
     };
 
-    // Score + label
     const score = calculateOverallScore(Object.values(statuses));
     const overallStatus = getHealthLabel(score);
-
     const recommendations = generateRecommendations(statuses);
 
-    // Save to DB with user_id
     const db = await dbPromise;
     await db.run(
       `
@@ -71,7 +65,6 @@ router.post("/", authMiddleware, async (req, res) => {
       ]
     );
 
-    // Respond to frontend
     res.json({
       score,
       overallStatus,

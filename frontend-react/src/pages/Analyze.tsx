@@ -12,6 +12,8 @@ type FormState = {
 
 export default function Analyze() {
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState<FormState>({
     nitrogen: "",
@@ -30,6 +32,9 @@ export default function Analyze() {
     e.preventDefault();
     if (!isValid) return;
 
+    setError(null);
+    setLoading(true);
+
     try {
       const result = await apiRequest(
         "http://localhost:5000/api/analyze",
@@ -46,8 +51,10 @@ export default function Analyze() {
       );
 
       navigate("/results", { state: result });
-    } catch {
-      alert("Failed to analyze soil.");
+    } catch (err) {
+      setError("We couldn’t analyze your soil right now. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -61,6 +68,12 @@ export default function Analyze() {
         onSubmit={handleSubmit}
         className="bg-white shadow rounded-xl p-6 space-y-4"
       >
+        {error && (
+          <div className="bg-red-50 text-red-600 p-3 rounded text-sm">
+            {error}
+          </div>
+        )}
+
         {[
           ["Nitrogen (%)", "nitrogen", 0, 100],
           ["Phosphorus (%)", "phosphorus", 0, 100],
@@ -86,14 +99,14 @@ export default function Analyze() {
         ))}
 
         <button
-          disabled={!isValid}
+          disabled={!isValid || loading}
           className={`w-full py-3 rounded font-medium text-white ${
             isValid
               ? "bg-teal-600 hover:bg-teal-700"
               : "bg-slate-300 cursor-not-allowed"
           }`}
         >
-          Analyze Soil
+          {loading ? "Analyzing..." : "Analyze Soil"}
         </button>
       </form>
     </div>

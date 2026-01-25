@@ -116,4 +116,23 @@ router.post("/login", async (req, res) => {
   }
 });
 
+import { authMiddleware } from "../middleware/authMiddleware";
+
+// GET CURRENT USER FROM JWT
+router.get("/me", authMiddleware, async (req, res) => {
+  try {
+    const user = (req as any).user;
+
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to fetch user profile",
+    });
+  }
+});
+
 export default router;

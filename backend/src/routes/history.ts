@@ -10,7 +10,7 @@ const router = Router();
  */
 router.get("/", authMiddleware, async (req, res) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
     const db = await dbPromise;
 
     const rows = await db.all(
