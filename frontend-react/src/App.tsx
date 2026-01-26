@@ -17,75 +17,20 @@ function App() {
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Header />
 
-      <main className="flex-grow">
+      <main className="flex-grow animate-page">
         <Routes>
           {/* Auth */}
           <Route path="/" element={<Navigate to="/auth" />} />
           <Route path="/auth" element={<Auth />} />
 
-          {/* Protected App */}
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/features"
-            element={
-              <ProtectedRoute>
-                <Features />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/analyze"
-            element={
-              <ProtectedRoute>
-                <Analyze />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/results"
-            element={
-              <ProtectedRoute>
-                <Results />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/history"
-            element={
-              <ProtectedRoute>
-                <History />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/about"
-            element={
-              <ProtectedRoute>
-                <About />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
+          {/* Protected */}
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/features" element={<ProtectedRoute><Features /></ProtectedRoute>} />
+          <Route path="/analyze" element={<ProtectedRoute><Analyze /></ProtectedRoute>} />
+          <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
+          <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+          <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         </Routes>
       </main>
 

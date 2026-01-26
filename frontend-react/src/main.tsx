@@ -11,7 +11,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <AuthProvider>
         <ErrorBoundary>
-          <App />
+          <div className="page-transition">
+            <App />
+          </div>
         </ErrorBoundary>
       </AuthProvider>
     </BrowserRouter>
