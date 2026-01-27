@@ -22,6 +22,13 @@ export default function ProfileMenu() {
 
   const displayName = user.name ?? user.email.split("@")[0];
 
+  async function handleLogout() {
+    setOpen(false);
+    document.body.classList.add("animate-fade-out");
+    await logout();
+    document.body.classList.remove("animate-fade-out");
+  }
+
   return (
     <div className="relative" ref={ref}>
       {/* Avatar */}
@@ -58,7 +65,7 @@ export default function ProfileMenu() {
           </NavLink>
 
           <button
-            onClick={logout}
+            onClick={handleLogout}
             disabled={loggingOut}
             className={`w-full text-left px-4 py-3 text-sm transition ${
               loggingOut

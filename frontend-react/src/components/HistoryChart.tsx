@@ -76,7 +76,12 @@ export default function HistoryChart({ data }: { data: ChartItem[] }) {
             }}
           />
 
-          <Legend />
+          <Legend
+            verticalAlign="top"
+            align="right"
+            iconType="circle"
+            wrapperStyle={{ fontSize: "13px" }}
+          />
 
           {/* Main score */}
           <Line

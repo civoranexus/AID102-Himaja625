@@ -38,16 +38,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    if (loggingOut) return;
+
     setLoggingOut(true);
 
-    // Small UX delay for animation
+    // Allow fade-out animation to play
     await new Promise((res) => setTimeout(res, 300));
 
     localStorage.removeItem("civorax-token");
     localStorage.removeItem("civorax-user");
+
     setUser(null);
     setLoggingOut(false);
-    navigate("/auth");
+    navigate("/auth", { replace: true });
   };
 
   return (

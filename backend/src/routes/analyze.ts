@@ -15,10 +15,6 @@ import { generateRecommendations } from "../ai/recommendations";
 
 const router = Router();
 
-/**
- * POST /api/analyze
- * Protected route – saves soil analysis for logged-in user
- */
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { nitrogen, phosphorus, potassium, ph, moisture } = req.body;
@@ -29,9 +25,7 @@ router.post("/", authMiddleware, async (req, res) => {
         (v) => typeof v !== "number"
       )
     ) {
-      return res.status(400).json({
-        error: "Invalid soil data input",
-      });
+      return res.status(400).json({ error: "Invalid soil data input" });
     }
 
     const statuses = {
@@ -47,11 +41,39 @@ router.post("/", authMiddleware, async (req, res) => {
     const recommendations = generateRecommendations(statuses);
 
     const db = await dbPromise;
+
+    // 🔹 Get previous score
+    const previous = await db.get(
+      `
+      SELECT score
+      FROM soil_analysis
+      WHERE user_id = ?
+      ORDER BY created_at DESC
+      LIMIT 1
+      `,
+      [userId]
+    );
+
+    const prevScore = previous?.score ?? null;
+    const deltaScore =
+      prevScore !== null ? Number((score - prevScore).toFixed(2)) : null;
+
     await db.run(
       `
       INSERT INTO soil_analysis
-      (user_id, nitrogen, phosphorus, potassium, ph, moisture, score, overall_status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      (
+        user_id,
+        nitrogen,
+        phosphorus,
+        potassium,
+        ph,
+        moisture,
+        score,
+        prev_score,
+        delta_score,
+        overall_status
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         userId,
@@ -61,21 +83,23 @@ router.post("/", authMiddleware, async (req, res) => {
         ph,
         moisture,
         score,
+        prevScore,
+        deltaScore,
         overallStatus,
       ]
     );
 
     res.json({
       score,
+      prevScore,
+      deltaScore,
       overallStatus,
       statuses,
       recommendations,
     });
   } catch (error) {
     console.error("Analyze error:", error);
-    res.status(500).json({
-      error: "Failed to analyze soil",
-    });
+    res.status(500).json({ error: "Failed to analyze soil" });
   }
 });
 

@@ -4,10 +4,6 @@ import { authMiddleware } from "../middleware/authMiddleware";
 
 const router = Router();
 
-/**
- * GET /api/history
- * Returns soil analysis history for logged-in user
- */
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const userId = req.user!.id;
@@ -17,6 +13,13 @@ router.get("/", authMiddleware, async (req, res) => {
       `
       SELECT
         score,
+        prev_score,
+        delta_score,
+        nitrogen,
+        phosphorus,
+        potassium,
+        ph,
+        moisture,
         overall_status,
         created_at
       FROM soil_analysis
@@ -29,9 +32,7 @@ router.get("/", authMiddleware, async (req, res) => {
     res.json(rows);
   } catch (error) {
     console.error("History fetch error:", error);
-    res.status(500).json({
-      error: "Failed to fetch history",
-    });
+    res.status(500).json({ error: "Failed to fetch history" });
   }
 });
 

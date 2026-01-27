@@ -16,53 +16,11 @@ body {
   outline: none;
 }
 .input:focus {
-  border-color: #0d9488; /* CivoraX teal */
+  border-color: #0d9488;
 }
 
-/* Animations */
+/* Fade in */
 @keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.4s ease-out;
-}
-
-/* Cards */
-.card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-}
-
-@keyframes fade-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-.animate-fade-out {
-  animation: fade-out 0.3s ease-in forwards;
-}
-
-/* Page transitions */
-.animate-page {
-  animation: page-in 0.35s ease-out;
-}
-
-@keyframes page-in {
   from {
     opacity: 0;
     transform: translateY(6px);
@@ -72,8 +30,28 @@ body {
     transform: translateY(0);
   }
 }
+.animate-fade-in {
+  animation: fade-in 0.35s ease-out;
+}
 
-/* Smooth route wrapper */
-.page-transition {
-  min-height: 100vh;
+/* Fade out */
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.animate-fade-out {
+  animation: fade-out 0.3s ease-in forwards;
+}
+
+/* Cards */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
 }
