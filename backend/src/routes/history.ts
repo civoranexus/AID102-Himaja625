@@ -15,11 +15,6 @@ router.get("/", authMiddleware, async (req, res) => {
         score,
         prev_score,
         delta_score,
-        nitrogen,
-        phosphorus,
-        potassium,
-        ph,
-        moisture,
         overall_status,
         created_at
       FROM soil_analysis

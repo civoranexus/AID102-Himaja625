@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import HistoryChart from "../components/HistoryChart";
 import { apiRequest } from "../utils/api";
 import { detectTrend } from "../utils/analytics";
+import { calculateStabilityScore } from "../utils/stability";
 
 type HistoryItem = {
   score: number;
@@ -68,6 +69,9 @@ export default function History() {
 
   const trend = detectTrend(data);
 
+  const stabilityScore = calculateStabilityScore(scores);
+
+
   /* ---------------- UI ---------------- */
   return (
     <div className="max-w-5xl mx-auto px-6 py-12 animate-fade-in">
@@ -82,6 +86,27 @@ export default function History() {
       {/* 🔹 Advanced Insights */}
       {data.length > 1 && (
         <div className="grid sm:grid-cols-3 gap-4 mb-8">
+
+        <div className="bg-white rounded-xl shadow p-5">
+            <p className="text-sm text-slate-500 mb-1">
+              Stability Score
+            </p>
+            <p
+              className={`text-2xl font-bold ${
+                stabilityScore > 80
+                  ? "text-green-600"
+                  : stabilityScore > 60
+                  ? "text-yellow-500"
+                  : "text-red-600"
+              }`}
+            >
+              {stabilityScore}%
+            </p>
+            <p className="text-xs text-slate-400 mt-1">
+              Consistency of soil health over time
+            </p>
+          </div>
+
           {/* Best Score */}
           <div className="bg-white rounded-xl shadow p-5">
             <p className="text-sm text-slate-500 mb-1">
