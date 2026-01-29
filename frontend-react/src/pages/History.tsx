@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import HistoryChart from "../components/HistoryChart";
+import ConfidenceRing from "../components/ConfidenceRing";
 import { apiRequest } from "../utils/api";
-import { detectTrend } from "../utils/analytics";
-import { calculateStabilityScore } from "../utils/stability";
+import PredictiveAlert from "../components/PredictiveAlert";
+import { generatePredictiveAlert } from "../utils/analytics";
+import {
+  detectTrend,
+  calculateStabilityScore,
+  calculateConsistencyIndex,
+  calculateConfidenceScore,
+} from "../utils/analytics";
 
 type HistoryItem = {
   score: number;
   prev_score: number | null;
   delta_score: number | null;
-  nitrogen: number;
-  phosphorus: number;
-  potassium: number;
-  ph: number;
-  moisture: number;
   overall_status: "poor" | "moderate" | "healthy";
   created_at: string;
 };
@@ -31,160 +33,174 @@ export default function History() {
       .finally(() => setLoading(false));
   }, []);
 
-  /* ---------------- Loading ---------------- */
-  if (loading) {
+  if (loading)
     return (
       <p className="text-center py-10 text-slate-600">
         Loading history…
       </p>
     );
-  }
 
-  /* ---------------- Error ---------------- */
-  if (error) {
+  if (error)
     return (
       <p className="text-center py-10 text-red-600">
         {error}
       </p>
     );
-  }
 
-  /* ---------------- Analytics ---------------- */
+  /* Analytics */
   const scores = data.map((d) => d.score);
 
   const averageScore =
-    scores.length > 0
-      ? scores.reduce((a, b) => a + b, 0) / scores.length
-      : 0;
+    scores.reduce((a, b) => a + b, 0) / (scores.length || 1);
 
-  const bestScore = scores.length > 0 ? Math.max(...scores) : 0;
-
-  const firstScore = scores[scores.length - 1];
-  const latestScore = scores[0];
+  const bestScore = Math.max(...scores);
 
   const improvementPercent =
     scores.length > 1
-      ? ((latestScore - firstScore) / firstScore) * 100
+      ? ((scores[0] - scores[scores.length - 1]) /
+          scores[scores.length - 1]) *
+        100
       : 0;
 
   const trend = detectTrend(data);
-
   const stabilityScore = calculateStabilityScore(scores);
+  const consistencyIndex = calculateConsistencyIndex(data);
 
+  const confidenceScore = calculateConfidenceScore(
+    stabilityScore,
+    consistencyIndex,
+    data.length
+  );
 
-  /* ---------------- UI ---------------- */
+  const predictiveAlert = generatePredictiveAlert(
+  scores,
+  stabilityScore,
+  consistencyIndex
+);
+
+  /* UI */
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12 animate-fade-in">
-      <h2 className="text-2xl font-bold mb-1">
+    <div className="max-w-6xl mx-auto px-6 py-12">
+      <h2 className="text-2xl font-bold mb-1 animate-fade-in">
         Analysis History
       </h2>
 
-      <p className="text-slate-600 mb-6">
+      <p className="text-slate-600 mb-10 animate-fade-in delay-1">
         Track how your soil health evolves over time
       </p>
 
-      {/* 🔹 Advanced Insights */}
-      {data.length > 1 && (
-        <div className="grid sm:grid-cols-3 gap-4 mb-8">
-
-        <div className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-slate-500 mb-1">
-              Stability Score
-            </p>
-            <p
-              className={`text-2xl font-bold ${
-                stabilityScore > 80
-                  ? "text-green-600"
-                  : stabilityScore > 60
-                  ? "text-yellow-500"
-                  : "text-red-600"
-              }`}
-            >
-              {stabilityScore}%
-            </p>
-            <p className="text-xs text-slate-400 mt-1">
-              Consistency of soil health over time
-            </p>
-          </div>
-
-          {/* Best Score */}
-          <div className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-slate-500 mb-1">
-              Best Score
-            </p>
-            <p className="text-2xl font-bold text-teal-600">
-              {bestScore.toFixed(0)}%
-            </p>
-          </div>
-
-          {/* Average */}
-          <div className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-slate-500 mb-1">
-              Average Score
-            </p>
-            <p className="text-2xl font-bold text-slate-800">
-              {averageScore.toFixed(1)}%
-            </p>
-          </div>
-
-          {/* Improvement */}
-          <div className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-slate-500 mb-1">
-              Improvement
-            </p>
-            <p
-              className={`text-2xl font-bold ${
-                improvementPercent > 0
-                  ? "text-green-600"
-                  : improvementPercent < 0
-                  ? "text-red-600"
-                  : "text-slate-600"
-              }`}
-            >
-              {improvementPercent > 0 && "↑ "}
-              {improvementPercent < 0 && "↓ "}
-              {Math.abs(improvementPercent).toFixed(1)}%
-            </p>
-          </div>
+      {/* Insights */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+        {/* Confidence : Hero */}
+        <div className="lg:row-span-2 bg-white rounded-2xl p-6 flex items-center justify-center shadow-sm animate-stagger delay-5">
+          <ConfidenceRing value={confidenceScore} />
         </div>
-      )}
+
+        <InsightCard
+          label="Stability"
+          value={`${stabilityScore}%`}
+          delay={1}
+        />
+
+        <InsightCard
+          label="Consistency"
+          value={`${consistencyIndex}%`}
+          delay={2}
+        />
+
+        <InsightCard
+          label="Average"
+          value={`${averageScore.toFixed(1)}%`}
+          subtle
+          delay={3}
+        />
+
+        <InsightCard
+          label="Best"
+          value={`${bestScore}%`}
+          teal
+          delay={4}
+        />
+
+        <InsightCard
+          label="Improvement"
+          value={`${Math.abs(improvementPercent).toFixed(1)}%`}
+          trend={improvementPercent}
+          delay={6}
+        />
+      </div>
 
       {/* Trend Badge */}
-      {data.length > 1 && (
-        <div className="mb-4">
-          <span
-            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 ${trend.color}`}
-          >
-            Soil trend: {trend.label}
-          </span>
-        </div>
-      )}
+      <span
+        className={`inline-flex mb-6 px-3 py-1 rounded-full text-sm bg-slate-100 animate-fade-in delay-7 ${trend.color}`}
+      >
+        Soil trend: {trend.label}
+      </span>
+
+      {/* Predictive Alert */}
+        {predictiveAlert && (
+          <div className="mb-6 animate-fade-in delay-6">
+            <PredictiveAlert alert={predictiveAlert} />
+          </div>
+        )}
 
       {/* Chart */}
-      {data.length > 1 && <HistoryChart data={data} />}
+      {data.length > 1 && (
+        <div className="animate-fade-in delay-8">
+          <HistoryChart data={data} />
+        </div>
+      )}
+    </div>
+  );
+}
 
-      {/* History Cards */}
-      <div className="space-y-4">
-        {data.map((item, index) => (
-          <div
-            key={index}
-            className="bg-white p-4 rounded-lg shadow flex justify-between items-center card"
-          >
-            <div>
-              <p className="font-medium capitalize">
-                {item.overall_status} soil
-              </p>
-              <p className="text-sm text-slate-500">
-                {new Date(item.created_at).toLocaleString()}
-              </p>
-            </div>
+/* Insight Card */
 
-            <div className="text-lg font-bold text-teal-600">
-              {item.score}%
-            </div>
-          </div>
-        ))}
-      </div>
+function InsightCard({
+  label,
+  value,
+  teal,
+  subtle,
+  trend,
+  delay,
+}: {
+  label: string;
+  value: string;
+  teal?: boolean;
+  subtle?: boolean;
+  trend?: number;
+  delay: number;
+}) {
+  return (
+    <div
+      className={`bg-white rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition animate-stagger delay-${delay}`}
+    >
+      <p className="text-xs uppercase tracking-wide text-slate-400">
+        {label}
+      </p>
+
+      <p
+        className={`mt-1 text-2xl font-semibold ${
+          teal
+            ? "text-teal-600"
+            : subtle
+            ? "text-slate-700"
+            : trend !== undefined
+            ? trend > 0
+              ? "text-green-600"
+              : trend < 0
+              ? "text-red-600"
+              : "text-slate-600"
+            : "text-slate-800"
+        }`}
+      >
+        {trend !== undefined && trend !== 0 && (
+          <span className="mr-1">
+            {trend > 0 ? "↑" : "↓"}
+          </span>
+        )}
+        {value}
+      </p>
     </div>
   );
 }
