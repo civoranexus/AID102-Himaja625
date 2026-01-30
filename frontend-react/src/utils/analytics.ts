@@ -41,44 +41,34 @@ export function detectTrend(data: HistoryItem[]) {
 }
 
 /* ---------------- Stability Score ---------------- */
-/**
- * Stability score based on variance (numbers only)
- * 0–100 (higher = more stable)
- */
+
 export function calculateStabilityScore(scores: number[]): number {
   if (scores.length < 2) return 100;
 
   const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
-
   const variance =
     scores.reduce((sum, s) => sum + Math.pow(s - mean, 2), 0) /
     scores.length;
 
-  const normalized = Math.max(0, 100 - variance);
-  return Math.round(normalized);
+  return Math.round(Math.max(0, 100 - variance));
 }
 
 /* ---------------- Consistency Index ---------------- */
-/**
- * % of non-poor readings
- */
+
 export function calculateConsistencyIndex(
   data: HistoryItem[]
 ): number {
   if (!data.length) return 0;
 
-  const good = data.filter(d => d.overall_status !== "poor").length;
+  const good = data.filter(
+    d => d.overall_status !== "poor"
+  ).length;
+
   return Math.round((good / data.length) * 100);
 }
 
 /* ---------------- Confidence Score ---------------- */
-/**
- * Confidence score based on:
- * - Stability (variance)
- * - Consistency
- * - Sample size
- * Returns 0–100
- */
+
 export function calculateConfidenceScore(
   stability: number,
   consistency: number,
@@ -86,25 +76,26 @@ export function calculateConfidenceScore(
 ): number {
   const sampleFactor = Math.min(100, sampleCount * 10);
 
-  const confidence =
+  const score =
     0.4 * stability +
     0.4 * consistency +
     0.2 * sampleFactor;
 
-  return Math.round(confidence);
+  return Math.round(score);
 }
 
-/* ---------------- Predictive Alerts ---------------- */
+/* ---------------- Predictive Alerts (ELITE) ---------------- */
 
 export type PredictiveAlert = {
   level: "positive" | "warning" | "danger";
   title: string;
   message: string;
+
+  confidence: number;
+  confidenceLabel: "Low" | "Medium" | "High";
+  explanation: string;
 };
 
-/**
- * Generate predictive alert based on recent trends
- */
 export function generatePredictiveAlert(
   scores: number[],
   stability: number,
@@ -113,36 +104,63 @@ export function generatePredictiveAlert(
   if (scores.length < 3) return null;
 
   const recent = scores.slice(0, 3);
-  const delta =
-    recent[0] - recent[recent.length - 1];
+  const delta = recent[0] - recent[recent.length - 1];
 
-  // 🔴 High risk
-  if (delta < -5 && stability < 60) {
+  const confidence =
+    Math.round(
+      0.5 * Math.abs(delta) * 10 +
+      0.3 * (100 - stability) +
+      0.2 * consistency
+    );
+
+  const normalized = Math.min(100, Math.max(30, confidence));
+
+  const confidenceLabel =
+    normalized >= 75
+      ? "High"
+      : normalized >= 50
+      ? "Medium"
+      : "Low";
+
+  /* 🔴 Degradation risk */
+  if (delta < -5 && stability < 65) {
     return {
       level: "danger",
       title: "Soil Degradation Risk",
       message:
-        "Recent decline detected with low stability. Immediate intervention is recommended to prevent further degradation.",
+        "Recent scores show a clear downward trend that may affect soil health.",
+      confidence: normalized,
+      confidenceLabel,
+      explanation:
+        "Based on repeated decline and unstable recent readings.",
     };
   }
 
-  // 🟡 Watch closely
+  /* 🟡 Instability */
   if (Math.abs(delta) <= 5 && stability < 70) {
     return {
       level: "warning",
-      title: "Potential Instability",
+      title: "Soil Health Instability",
       message:
-        "Soil health is fluctuating. Monitor moisture and pH closely over the next cycle.",
+        "Soil readings are fluctuating and may require closer monitoring.",
+      confidence: normalized,
+      confidenceLabel,
+      explanation:
+        "Trend detected with moderate variation across recent samples.",
     };
   }
 
-  // 🟢 Positive momentum
+  /* 🟢 Positive trend */
   if (delta > 5 && consistency > 80) {
     return {
       level: "positive",
       title: "Healthy Upward Trend",
       message:
-        "Soil health is improving steadily. Current practices are working well.",
+        "Soil health is improving steadily under current conditions.",
+      confidence: normalized,
+      confidenceLabel,
+      explanation:
+        "Consistent improvement observed across recent measurements.",
     };
   }
 

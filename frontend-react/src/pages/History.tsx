@@ -1,204 +1,142 @@
 import { useEffect, useState } from "react";
 import HistoryChart from "../components/HistoryChart";
 import ConfidenceRing from "../components/ConfidenceRing";
-import { apiRequest } from "../utils/api";
 import PredictiveAlert from "../components/PredictiveAlert";
-import { generatePredictiveAlert } from "../utils/analytics";
+import { apiRequest } from "../utils/api";
+import ConfidenceBreakdown from "../components/ConfidenceBreakdown";
 import {
-  detectTrend,
   calculateStabilityScore,
   calculateConsistencyIndex,
   calculateConfidenceScore,
+  generatePredictiveAlert,
 } from "../utils/analytics";
 
 type HistoryItem = {
   score: number;
-  prev_score: number | null;
-  delta_score: number | null;
-  overall_status: "poor" | "moderate" | "healthy";
   created_at: string;
 };
 
+type Range = "daily" | "weekly" | "monthly";
+
 export default function History() {
+  const [range, setRange] = useState<Range>("daily");
   const [data, setData] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiRequest<HistoryItem[]>("http://localhost:5000/api/history")
+    setLoading(true);
+    apiRequest<HistoryItem[]>(`http://localhost:5000/api/history?range=${range}`)
       .then(setData)
-      .catch(() =>
-        setError("Unable to load history. Please try again later.")
-      )
       .finally(() => setLoading(false));
-  }, []);
+  }, [range]);
 
-  if (loading)
+  if (loading) {
     return (
-      <p className="text-center py-10 text-slate-600">
-        Loading history…
+      <p className="text-center py-12 text-slate-500 animate-fade-in">
+        Loading analytics…
       </p>
     );
+  }
 
-  if (error)
-    return (
-      <p className="text-center py-10 text-red-600">
-        {error}
-      </p>
-    );
+  const scores = data.map(d => d.score);
 
-  /* Analytics */
-  const scores = data.map((d) => d.score);
+  const stability = calculateStabilityScore(scores);
+  const consistency = calculateConsistencyIndex(
+    data.map(d => ({
+      score: d.score,
+      overall_status: "moderate",
+      created_at: d.created_at,
+    }))
+  );
 
-  const averageScore =
-    scores.reduce((a, b) => a + b, 0) / (scores.length || 1);
-
-  const bestScore = Math.max(...scores);
-
-  const improvementPercent =
-    scores.length > 1
-      ? ((scores[0] - scores[scores.length - 1]) /
-          scores[scores.length - 1]) *
-        100
-      : 0;
-
-  const trend = detectTrend(data);
-  const stabilityScore = calculateStabilityScore(scores);
-  const consistencyIndex = calculateConsistencyIndex(data);
-
-  const confidenceScore = calculateConfidenceScore(
-    stabilityScore,
-    consistencyIndex,
+  const confidence = calculateConfidenceScore(
+    stability,
+    consistency,
     data.length
   );
 
-  const predictiveAlert = generatePredictiveAlert(
-  scores,
-  stabilityScore,
-  consistencyIndex
-);
+  const alert = generatePredictiveAlert(scores, stability, consistency);
 
-  /* UI */
+  <ConfidenceBreakdown
+    stability={stability}
+    consistency={consistency}
+    samples={data.length}
+  />
+
   return (
-    <div className="max-w-6xl mx-auto px-6 py-12">
-      <h2 className="text-2xl font-bold mb-1 animate-fade-in">
-        Analysis History
-      </h2>
+    <div className="max-w-6xl mx-auto px-6 py-12 space-y-10">
+      {/* Header */}
+      <header className="space-y-2">
+        <h2 className="text-2xl font-bold">Analysis History</h2>
+        <p className="text-slate-500">
+          Confidence-driven insights from your soil data
+        </p>
+      </header>
 
-      <p className="text-slate-600 mb-10 animate-fade-in delay-1">
-        Track how your soil health evolves over time
-      </p>
-
-      {/* Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-        {/* Confidence : Hero */}
-        <div className="lg:row-span-2 bg-white rounded-2xl p-6 flex items-center justify-center shadow-sm animate-stagger delay-5">
-          <ConfidenceRing value={confidenceScore} />
-        </div>
-
-        <InsightCard
-          label="Stability"
-          value={`${stabilityScore}%`}
-          delay={1}
-        />
-
-        <InsightCard
-          label="Consistency"
-          value={`${consistencyIndex}%`}
-          delay={2}
-        />
-
-        <InsightCard
-          label="Average"
-          value={`${averageScore.toFixed(1)}%`}
-          subtle
-          delay={3}
-        />
-
-        <InsightCard
-          label="Best"
-          value={`${bestScore}%`}
-          teal
-          delay={4}
-        />
-
-        <InsightCard
-          label="Improvement"
-          value={`${Math.abs(improvementPercent).toFixed(1)}%`}
-          trend={improvementPercent}
-          delay={6}
-        />
+      {/* Range Toggle */}
+      <div className="inline-flex bg-slate-100 rounded-xl p-1">
+        {(["daily", "weekly", "monthly"] as Range[]).map(r => (
+          <button
+            key={r}
+            onClick={() => setRange(r)}
+            className={`px-4 py-2 text-sm rounded-lg transition ${
+              range === r
+                ? "bg-white shadow text-slate-900"
+                : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            {r.charAt(0).toUpperCase() + r.slice(1)}
+          </button>
+        ))}
       </div>
 
-      {/* Trend Badge */}
-      <span
-        className={`inline-flex mb-6 px-3 py-1 rounded-full text-sm bg-slate-100 animate-fade-in delay-7 ${trend.color}`}
-      >
-        Soil trend: {trend.label}
-      </span>
+      {/* HERO INSIGHTS */}
+      <section className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Confidence Hero */}
+        <div className="lg:row-span-2 bg-white rounded-3xl p-8 shadow-sm flex items-center justify-center animate-stagger delay-1">
+          <ConfidenceRing
+            value={confidence}
+            history={scores}
+          />
+        </div>
 
-      {/* Predictive Alert */}
-        {predictiveAlert && (
-          <div className="mb-6 animate-fade-in delay-6">
-            <PredictiveAlert alert={predictiveAlert} />
-          </div>
-        )}
+        <Metric label="Stability" value={`${stability}%`} delay={2} />
+        <Metric label="Consistency" value={`${consistency}%`} delay={3} />
+        <Metric label="Samples" value={`${data.length}`} delay={4} />
+      </section>
 
-      {/* Chart */}
-      {data.length > 1 && (
-        <div className="animate-fade-in delay-8">
-          <HistoryChart data={data} />
+      {/* Alert */}
+      {alert && (
+        <div className="animate-fade-in delay-5">
+          <PredictiveAlert alert={alert} />
         </div>
       )}
+
+      {/* Chart */}
+      <section className="animate-fade-in delay-6">
+        <HistoryChart data={data} range={range} />
+      </section>
     </div>
   );
 }
 
-/* Insight Card */
-
-function InsightCard({
+function Metric({
   label,
   value,
-  teal,
-  subtle,
-  trend,
   delay,
 }: {
   label: string;
   value: string;
-  teal?: boolean;
-  subtle?: boolean;
-  trend?: number;
   delay: number;
 }) {
   return (
     <div
-      className={`bg-white rounded-xl px-5 py-4 shadow-sm hover:shadow-md transition animate-stagger delay-${delay}`}
+      className={`bg-white rounded-2xl px-6 py-5 shadow-sm animate-stagger delay-${delay}`}
     >
       <p className="text-xs uppercase tracking-wide text-slate-400">
         {label}
       </p>
-
-      <p
-        className={`mt-1 text-2xl font-semibold ${
-          teal
-            ? "text-teal-600"
-            : subtle
-            ? "text-slate-700"
-            : trend !== undefined
-            ? trend > 0
-              ? "text-green-600"
-              : trend < 0
-              ? "text-red-600"
-              : "text-slate-600"
-            : "text-slate-800"
-        }`}
-      >
-        {trend !== undefined && trend !== 0 && (
-          <span className="mr-1">
-            {trend > 0 ? "↑" : "↓"}
-          </span>
-        )}
+      <p className="mt-1 text-2xl font-semibold text-slate-800">
         {value}
       </p>
     </div>

@@ -107,3 +107,10 @@ body {
 .delay-6 { animation-delay: 0.3s; }
 .delay-7 { animation-delay: 0.35s; }
 .delay-8 { animation-delay: 0.4s; }
+
+
+:root {
+  --emerald: #10b981;
+  --amber: #f59e0b;
+  --red: #ef4444;
+}
