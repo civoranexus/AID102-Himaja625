@@ -110,16 +110,12 @@ export default function History() {
         ))}
       </div>
 
-      {/* HERO INSIGHTS */}
-      <section className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:row-span-2 bg-white rounded-3xl p-8 shadow-sm flex items-center justify-center">
-          <ConfidenceRing value={confidence} history={scores} />
-        </div>
-
-        <Metric label="Stability" value={`${stability}%`} />
-        <Metric label="Consistency" value={`${consistency}%`} />
-        <Metric label="Samples" value={`${data.length}`} />
-      </section>
+      {/* Metrics */}
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <Metric label="Stability" value={`${stability}%`} />
+          <Metric label="Consistency" value={`${consistency}%`} />
+          <Metric label="Samples" value={`${data.length}`} />
+        </section>
 
       <ConfidenceBreakdown
         stability={stability}
