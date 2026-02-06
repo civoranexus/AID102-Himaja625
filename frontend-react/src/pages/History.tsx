@@ -72,6 +72,7 @@ export default function History() {
     samples: data.length,
   });
 
+  // ✅ USE ANALYTICS OUTPUT DIRECTLY
   const alert = generatePredictiveAlert(
     scores,
     stability,
@@ -80,12 +81,11 @@ export default function History() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 space-y-10">
-      <div className="lg:row-span-2 bg-white rounded-3xl p-8 shadow-sm flex flex-col items-center justify-center">
+      <div className="bg-white rounded-3xl p-8 shadow-sm flex flex-col items-center">
         <ConfidenceRing value={confidence} history={scores} />
         <ConfidenceTrend data={confidenceTrend} />
       </div>
-      
-      {/* Header */}
+
       <header className="space-y-2">
         <h2 className="text-2xl font-bold">Analysis History</h2>
         <p className="text-slate-500">
@@ -93,7 +93,6 @@ export default function History() {
         </p>
       </header>
 
-      {/* Range Toggle */}
       <div className="inline-flex bg-slate-100 rounded-xl p-1">
         {(["daily", "weekly", "monthly"] as Range[]).map(r => (
           <button
@@ -110,12 +109,11 @@ export default function History() {
         ))}
       </div>
 
-      {/* Metrics */}
-        <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <Metric label="Stability" value={`${stability}%`} />
-          <Metric label="Consistency" value={`${consistency}%`} />
-          <Metric label="Samples" value={`${data.length}`} />
-        </section>
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <Metric label="Stability" value={`${stability}%`} />
+        <Metric label="Consistency" value={`${consistency}%`} />
+        <Metric label="Samples" value={`${data.length}`} />
+      </section>
 
       <ConfidenceBreakdown
         stability={stability}
@@ -138,13 +136,7 @@ export default function History() {
   );
 }
 
-function Metric({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-white rounded-2xl px-6 py-5 shadow-sm">
       <p className="text-xs uppercase tracking-wide text-slate-400">

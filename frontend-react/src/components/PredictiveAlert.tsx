@@ -1,13 +1,14 @@
-type Props = {
-  alert: {
-    level: "positive" | "warning" | "danger";
-    title: string;
-    message: string;
+type PredictiveAlertType = {
+  level: "positive" | "warning" | "danger";
+  title: string;
+  message: string;
+  confidence: number;
+  confidenceLabel: "Low" | "Medium" | "High";
+  explanation: string;
+};
 
-    confidence: number;
-    confidenceLabel: "Low" | "Medium" | "High";
-    explanation: string;
-  };
+type Props = {
+  alert: PredictiveAlertType;
 };
 
 export default function PredictiveAlert({ alert }: Props) {
@@ -36,13 +37,7 @@ export default function PredictiveAlert({ alert }: Props) {
   }[alert.level];
 
   return (
-    <div
-      className={`
-        ${styles.bg} ${styles.border}
-        border rounded-2xl p-5
-        animate-fade-in
-      `}
-    >
+    <div className={`${styles.bg} ${styles.border} border rounded-2xl p-5 animate-fade-in`}>
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
           <span className="text-xl">{styles.icon}</span>
@@ -62,14 +57,7 @@ export default function PredictiveAlert({ alert }: Props) {
           </div>
         </div>
 
-        {/* Confidence Badge */}
-        <div
-          className={`
-            ${styles.badge}
-            px-3 py-1 rounded-full text-xs font-medium
-            whitespace-nowrap
-          `}
-        >
+        <div className={`${styles.badge} px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap`}>
           Confidence: {alert.confidenceLabel} ({alert.confidence}%)
         </div>
       </div>
