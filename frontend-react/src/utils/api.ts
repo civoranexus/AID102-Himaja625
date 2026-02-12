@@ -3,13 +3,17 @@ export type ApiError = {
   status: number;
 };
 
+// Automatically switch between local and production backend
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
 export async function apiRequest<T = unknown>(
-  url: string,
+  endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
   const token = localStorage.getItem("civorax-token");
 
-  const res = await fetch(url, {
+  const res = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -18,20 +22,19 @@ export async function apiRequest<T = unknown>(
     },
   });
 
-  // Session expired / invalid token
+  // Handle session expiration
   if (res.status === 401) {
     localStorage.removeItem("civorax-token");
     localStorage.removeItem("civorax-user");
     window.location.href = "/auth";
 
-    const error: ApiError = {
+    throw {
       message: "Session expired. Please login again.",
       status: 401,
-    };
-    throw error;
+    } as ApiError;
   }
 
-  // Other server errors
+  // Handle other errors
   if (!res.ok) {
     let message = "Something went wrong. Please try again.";
 
@@ -42,11 +45,10 @@ export async function apiRequest<T = unknown>(
       // ignore JSON parse errors
     }
 
-    const error: ApiError = {
+    throw {
       message,
       status: res.status,
-    };
-    throw error;
+    } as ApiError;
   }
 
   return res.json();
