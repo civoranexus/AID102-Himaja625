@@ -18,6 +18,7 @@ export function generateSoilRecommendations({
 }): Recommendation[] {
   const recs: Recommendation[] = [];
 
+  // Critical: Declining trend
   if (trend === "Declining") {
     recs.push({
       level: "critical",
@@ -29,6 +30,7 @@ export function generateSoilRecommendations({
     });
   }
 
+  // Warning: Low stability
   if (stability < 60) {
     recs.push({
       level: "warning",
@@ -40,6 +42,19 @@ export function generateSoilRecommendations({
     });
   }
 
+  // Warning: Low consistency (FIXED — now it's used)
+  if (consistency < 60) {
+    recs.push({
+      level: "warning",
+      title: "Inconsistent Soil Conditions",
+      message:
+        "Soil consistency across measurements is below optimal range.",
+      rationale:
+        "Low consistency may indicate uneven nutrient distribution or sampling variability.",
+    });
+  }
+
+  // Warning: Low confidence
   if (confidence < 50) {
     recs.push({
       level: "warning",
@@ -51,6 +66,7 @@ export function generateSoilRecommendations({
     });
   }
 
+  // If everything is good
   if (recs.length === 0) {
     recs.push({
       level: "info",
