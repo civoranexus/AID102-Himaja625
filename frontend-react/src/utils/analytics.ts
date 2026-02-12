@@ -90,21 +90,52 @@ export type PredictiveAlert = {
   confidence: number;
 };
 
+export type PredictiveAlertType = {
+  level: "positive" | "warning" | "danger";
+  title: string;
+  message: string;
+  confidence: number;
+  confidenceLabel: "Low" | "Medium" | "High";
+  explanation: string;
+};
+
 export function generatePredictiveAlert(
   scores: number[],
   stability: number,
   consistency: number
-): PredictiveAlert | null {
+): PredictiveAlertType | null {
   if (scores.length < 3) return null;
 
-  const delta = scores[0] - scores[scores.length - 1];
+  const recent = scores.slice(0, 3);
+  const delta = recent[0] - recent[recent.length - 1];
+
+  const confidenceRaw =
+    0.5 * Math.abs(delta) * 10 +
+    0.3 * (100 - stability) +
+    0.2 * consistency;
+
+  const confidence = Math.min(
+    100,
+    Math.max(30, Math.round(confidenceRaw))
+  );
+
+  const confidenceLabel =
+    confidence >= 75
+      ? "High"
+      : confidence >= 50
+      ? "Medium"
+      : "Low";
 
   if (delta < -5 && stability < 65) {
     return {
       level: "danger",
       title: "Soil Degradation Risk",
-      message: "Downward trend with unstable readings detected.",
-      confidence: 80,
+      message:
+        "Recent soil scores show a clear downward trend that may impact crop health.",
+      confidence,
+      confidenceLabel,
+      explanation:
+        "Repeated decline combined with unstable recent readings.",
     };
   }
 
@@ -112,17 +143,25 @@ export function generatePredictiveAlert(
     return {
       level: "warning",
       title: "Soil Health Instability",
-      message: "Readings fluctuate — closer monitoring advised.",
-      confidence: 65,
+      message:
+        "Soil readings are fluctuating and require closer monitoring.",
+      confidence,
+      confidenceLabel,
+      explanation:
+        "Moderate variation detected across recent samples.",
     };
   }
 
   if (delta > 5 && consistency > 80) {
     return {
       level: "positive",
-      title: "Healthy Improvement",
-      message: "Soil health improving consistently.",
-      confidence: 85,
+      title: "Healthy Upward Trend",
+      message:
+        "Soil health is improving steadily under current conditions.",
+      confidence,
+      confidenceLabel,
+      explanation:
+        "Consistent improvement observed across recent measurements.",
     };
   }
 
